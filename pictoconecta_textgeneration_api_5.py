@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pprint import pformat
 import sys
+import torch
 import os
 from config import ConfigModel
 import traceback
@@ -24,8 +25,21 @@ if not openai.api_key:
     raise ValueError("No se ha proporcionado la clave API de OpenAI. Asegúrate de establecer la variable de entorno OPENAI_API_KEY.")
 
 # Configuración de logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # Log to stdout
+        logging.FileHandler("app.log", mode='a', encoding='utf-8')  # Log to a file
+    ]
+)
 logger = logging.getLogger(__name__)
+
+# Adding a handler to print errors to stderr
+error_handler = logging.StreamHandler(sys.stderr)
+error_handler.setLevel(logging.ERROR)
+error_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(error_handler)
 
 # Inicializa la aplicación Flask
 app = Flask(__name__)
@@ -177,12 +191,17 @@ def chat():
 
 # Handler para AWS Lambda
 def lambda_handler(event, context):
+    logger.info("Iniciando función lambda_handler")
+    logger.debug(f"Evento recibido: {event}")
+    logger.debug(f"Contexto recibido: {context}")
     # Extraer el cuerpo de la solicitud en el formato correcto
     if 'body' in event and event['body']:
         # Si el cuerpo es un JSON, se convierte en un diccionario
         body = json.loads(event['body'])
     else:
         body = {}
+    
+    logger.debug(f"Cuerpo de la solicitud: {body}")
 
     # Crea un entorno de prueba de solicitud HTTP para el evento
     with app.test_request_context(
@@ -191,10 +210,12 @@ def lambda_handler(event, context):
         headers=event.get('headers', {}),
         data=json.dumps(body)  # Convierte el cuerpo de nuevo a JSON
     ):
+        logger.info("Entorno de solicitud creado")
         # Llama a la aplicación para procesar la solicitud completa
         response = app.full_dispatch_request()
         
         # Devuelve la respuesta en el formato esperado por AWS
+        logger.info(f"Respuesta de la aplicación: {response}")
         return {
             "statusCode": response.status_code,
             "headers": dict(response.headers),

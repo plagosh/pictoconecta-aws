@@ -1,4 +1,4 @@
-FROM python:3.11-slim AS builder
+FROM public.ecr.aws/lambda/python:3.11 AS builder
 # Set the working directory
 WORKDIR /var/task
 

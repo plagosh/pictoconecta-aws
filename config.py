@@ -7,7 +7,7 @@ load_dotenv()
 
 class ConfigModel(BaseSettings):
     model_checkpoint_gpt: str = "./gpt2-pretrained"
-    OPENAI_API_KEY: str = "sk-vC-oHd3vNOuSjoYWwe-9JT_fTCliSLVsKOx3DUGTUkT3BlbkFJodKm1kkZoxFcY-wxLugrBiPjB6QQ2FeT5ixcD3O8IA"
+    OPENAI_API_KEY: str
     max_history: int = 10
     max_token: int = 150
     no_sample: bool = "false" in ("true", "1")

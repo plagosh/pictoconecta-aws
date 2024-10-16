@@ -18,7 +18,7 @@ class ConfigModel(BaseSettings):
     top_k: int = 5
     top_p: float = 0.95
     num_suggestions: int = 1
-    historial_path: str = "historial.json"
+    historial_path: str = "/tmp/historial.json"
     stats_path: str = "stats_text_generation.json"
     presence_penalty: float = 0.5
     frequency_penalty: float = 0.5

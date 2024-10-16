@@ -176,9 +176,6 @@ def chat():
             stop=None
         ).choices[0].message['content'].strip()
         logger.info(f"Respuesta generada: {response}")
-    except openai.Error as e:
-        logger.error(f"Error al generar respuesta: {e}")
-        response = "Lo siento, no pude entender eso."
     except Exception as e:
         trace = traceback.format_exc()
         logger.error(f"Error al generar respuesta: {e}\n{trace}")

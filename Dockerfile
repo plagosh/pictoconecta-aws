@@ -6,8 +6,9 @@ WORKDIR /var/task
 COPY pictoconecta_textgeneration_api_5.py .
 COPY requirements.txt .
 COPY config.py .
-COPY historial.json .
 COPY utils.py .
+
+COPY historial.json /tmp/
 
 # Install dependencies from the requirements file
 RUN pip install --no-cache-dir -r requirements.txt

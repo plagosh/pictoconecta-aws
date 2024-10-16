@@ -25,21 +25,20 @@ if not openai.api_key:
     raise ValueError("No se ha proporcionado la clave API de OpenAI. Asegúrate de establecer la variable de entorno OPENAI_API_KEY.")
 
 # Configuración de logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),  # Log to stdout
-        logging.FileHandler("app.log", mode='a', encoding='utf-8')  # Log to a file
-    ]
+logging.getLogger().handlers.clear()
+logger = logging.getLogger('pictoconecta_text-generation')
+log_level = logging.DEBUG
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(
+    logging.Formatter(
+        '[%(asctime)s][%(filename)s:%(lineno)d][%(funcName)s][%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
 )
-logger = logging.getLogger(__name__)
-
-# Adding a handler to print errors to stderr
-error_handler = logging.StreamHandler(sys.stderr)
-error_handler.setLevel(logging.ERROR)
-error_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(error_handler)
+log_handler.setLevel(log_level)
+logger.level = log_level
+logger.handlers.clear()
+logger.addHandler(log_handler)
 
 # Inicializa la aplicación Flask
 app = Flask(__name__)
@@ -129,10 +128,12 @@ def create_app():
 @app.route('/chat', methods=['POST'])
 def chat():
     global history, config
-
     logger.info("Iniciando chat")
-    data = request.get_json()  # Obtiene los datos de la solicitud POST en formato JSON
-    
+    data = request.get_json()
+    if data is None:
+        logger.error("No se pudo obtener JSON de la solicitud.")
+        return jsonify({"error": "Solicitud inválida. No se pudo obtener JSON."}), 400
+    logger.debug(f"Solicitud recibida: {data}")
     # Manejo de error para verificar que 'text' esté presente
     if 'text' not in data:
         logger.error("No se encontró 'text' en la solicitud.")
@@ -190,7 +191,7 @@ def chat():
     return jsonify({"response": response})
 
 # Handler para AWS Lambda
-def lambda_handler(event, context):
+def lambda_handler(event: dict, context: dict):
     logger.info("Iniciando función lambda_handler")
     logger.debug(f"Evento recibido: {event}")
     logger.debug(f"Contexto recibido: {context}")

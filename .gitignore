@@ -1,0 +1,56 @@
+**/.project
+**/.classpath
+**/.metadata
+**/target
+**/build
+
+# compiled output
+**/dist
+**/tmp
+**/out-tsc
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# System Files
+**/.DS_Store
+**/Thumbs.db
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Serverless directories
+.serverless
+serverless1.yml
+
+# node
+node_modules
+package-lock.json
+schemas/__pycache__/inputs.cpython-39.pyc
+schemas/__pycache__/inputs.cpython-312.pyc
+.venv/
+
+__pycache__/
+.venv
+__pycache__
